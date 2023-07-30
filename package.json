@@ -1,16 +1,12 @@
 {
   "name": "projeto16-boardcamp",
   "type": "module",
-  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
