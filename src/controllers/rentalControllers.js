@@ -51,7 +51,7 @@ export async function createRental(req, res) {
         const game = games.rows[0];
 
         // check if game is in stock
-        const gameRentals = await db.query(`SELECT * FROM rentals WHERE "gameId" = '${gameId}'`);
+        const gameRentals = await db.query(`SELECT * FROM rentals WHERE "gameId" = ${gameId} AND "returnDate" = null;`);
         if (gameRentals.rows.length == game.stockTotal) { return res.sendStatus(400) };
 
         console.log(game);
