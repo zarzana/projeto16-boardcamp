@@ -14,13 +14,13 @@ export async function readRental(req, res) {
                     ON customers.id = rentals."customerId" 
                 JOIN games 
                     ON games.id = rentals."gameId";`);
-    
+
         let rentalsFixed = rentals.rows.map(e => ({
             ...e,
-            customer: {id: e.customerId, name: e.customerName},
-            game: {id: e.gameId, name: e.gameName}
+            customer: { id: e.customerId, name: e.customerName },
+            game: { id: e.gameId, name: e.gameName }
         }));
-        rentalsFixed = rentalsFixed.map(({customerName, gameName, ...keepAttrs}) => keepAttrs);
+        rentalsFixed = rentalsFixed.map(({ customerName, gameName, ...keepAttrs }) => keepAttrs);
 
         res.send(rentalsFixed);
 
@@ -68,6 +68,37 @@ export async function createRental(req, res) {
                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
             [customerId, gameId, rentDate, daysRented, returnDate, originalPrice, delayFee]);
         res.sendStatus(201);
+
+    } catch (err) {
+
+        res.status(500).send(err.message);
+
+    }
+
+}
+
+export async function endRental(req, res) {
+
+    const rentalId = req.params.id;
+
+    try {
+
+        // check if id exists and set rental
+        const rentals = await db.query(`SELECT rentals.*, games."pricePerDay" FROM rentals
+            JOIN games ON rentals."gameId" = games.id
+            WHERE rentals.id=${rentalId};`);
+        if (rentals.rows.length === 0) { return res.sendStatus(404) };
+        const rental = rentals.rows[0];
+        if (rental.returnDate) { return res.sendStatus(400) };
+
+        // set variables
+        const returnDate = dayjs().format('YYYY-MM-DD');
+        const delayFee = dayjs(returnDate).diff(rental.rentDate, 'day') * rental.pricePerDay;
+
+        await db.query(`UPDATE rentals
+                SET "returnDate" = '${returnDate}', "delayFee" = ${delayFee}
+                WHERE id=${rentalId};`);
+        res.sendStatus(200);
 
     } catch (err) {
 
