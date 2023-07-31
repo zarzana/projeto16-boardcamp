@@ -58,7 +58,7 @@ export async function createRental(req, res) {
         if (gameRentals.rows.length >= game.stockTotal) { return res.sendStatus(400) };
 
         // set variables to be sent to db
-        const originalPrice = game.pricePerDay;
+        const originalPrice = game.pricePerDay * daysRented;
         const rentDate = dayjs().format('YYYY-MM-DD');
         const returnDate = null;
         const delayFee = null;
