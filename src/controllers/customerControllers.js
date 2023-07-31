@@ -69,7 +69,8 @@ export async function updateCustomer(req, res) {
 
     try {
 
-        const customerWithCpf = await db.query(`SELECT exists (SELECT 1 FROM customers WHERE cpf = '${cpf}' LIMIT 1)`);
+        const customerWithCpf = await db.query(`SELECT exists
+            (SELECT 1 FROM customers WHERE id<>${customerId} AND cpf = '${cpf}' LIMIT 1)`);
         if (customerWithCpf.rows[0].exists) { return res.sendStatus(409) };
 
         const customers = await db.query(`SELECT * FROM customers WHERE id=${customerId} LIMIT 1`);
