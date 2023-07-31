@@ -87,11 +87,12 @@ export async function endRental(req, res) {
             WHERE rentals.id=${rentalId};`);
         if (rentals.rows.length === 0) { return res.sendStatus(404) };
         const rental = rentals.rows[0];
+        console.log(rental);
         if (rental.returnDate) { return res.sendStatus(400) };
 
         // set variables
         const returnDate = dayjs().format('YYYY-MM-DD');
-        const delayFee = dayjs(returnDate).diff(rental.rentDate, 'day') * rental.pricePerDay;
+        const delayFee = Math.max(0, (dayjs(returnDate).diff(rental.rentDate, 'd')-rental.daysRented) * rental.pricePerDay);
 
         await db.query(`UPDATE rentals
                 SET "returnDate" = '${returnDate}', "delayFee" = ${delayFee}
