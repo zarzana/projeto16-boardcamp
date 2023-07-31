@@ -6,7 +6,9 @@ export async function readCustomer(req, res) {
     try {
 
         const customers = await db.query("SELECT * FROM customers");
-        res.send(customers.rows);
+
+        const customersDateFix = customers.rows.map(e => ({ ...e, birthday: dayjs(e.birthday).format('YYYY-MM-DD') }));
+        res.send(customersDateFix);
 
     } catch (err) {
 
@@ -27,7 +29,7 @@ export async function readCustomerId(req, res) {
         if (customers.rows.length === 0) { return res.sendStatus(404) };
 
         let customer = customers.rows[0];
-        customer.birthday = dayjs(customer.birthday).format('YYYY-MM-DD')
+        customer.birthday = dayjs(customer.birthday).format('YYYY-MM-DD');
 
         res.send(customer);
 
