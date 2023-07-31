@@ -50,11 +50,8 @@ export async function createRental(req, res) {
         const games = await db.query(`SELECT * FROM games WHERE id = '${gameId}' LIMIT 1`);
         const game = games.rows[0];
 
-        console.log(game)
-
         // check if game is in stock
         const gameRentals = await db.query(`SELECT * FROM rentals WHERE "gameId" = ${gameId} AND "returnDate" IS NULL;`);
-        console.log(gameRentals.rows.length);
         if (gameRentals.rows.length >= game.stockTotal) { return res.sendStatus(400) };
 
         // set variables to be sent to db
